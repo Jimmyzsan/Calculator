@@ -21,3 +21,8 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+
+# Generated file of vscode extension "DarrenDanielDay.css-module-types-and-map":
+*.module.css.d.ts
+*.module.css.d.ts.map

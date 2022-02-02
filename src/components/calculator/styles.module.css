@@ -1,0 +1,23 @@
+.calculator label {
+  text-align: center;
+}
+.actions-header {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 100px);
+  gap: 12px;
+}
+.input-header {
+  display: grid;
+  grid-template-columns: repeat(5, 100px);
+  gap: 12px;
+  margin: 12px 0;
+}
+.input-header > div {
+  text-align: center;
+}
+.input-row {
+  display: grid;
+  grid-template-columns: repeat(5, 100px) 24px;
+  gap: 12px;
+  margin: 12px 0;
+}
