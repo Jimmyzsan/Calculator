@@ -1,23 +1,40 @@
 .calculator label {
   text-align: center;
 }
+.calculator label[for]::after {
+  content: ":";
+}
+.calculator .title {
+  display: flex;
+  height: 200px;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  font-size: large;
+}
 .actions-header {
   display: grid;
-  grid-template-columns: repeat(auto-fill, 100px);
-  gap: 12px;
+  grid-template-columns: 100px 180px repeat(auto-fill, 100px);
 }
 .input-header {
   display: grid;
-  grid-template-columns: repeat(5, 100px);
+  grid-template-columns: repeat(auto-fill, 100px);
   gap: 12px;
   margin: 12px 0;
 }
 .input-header > div {
   text-align: center;
 }
+.unit {
+  margin: 4px;
+  font-weight: 500;
+}
 .input-row {
   display: grid;
-  grid-template-columns: repeat(5, 100px) 24px;
+  grid-template-columns: repeat(6, 100px) 24px;
   gap: 12px;
   margin: 12px 0;
+}
+.footer .result {
+  margin: 0 4px;
 }

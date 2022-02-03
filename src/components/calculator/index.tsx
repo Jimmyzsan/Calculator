@@ -1,12 +1,19 @@
 import { produce } from "immer";
-import React, { createContext, useContext, useState } from "react";
-import { calculate } from "../../services/calculator";
+import React, {
+  createContext,
+  useContext,
+  useMemo,
+  useReducer,
+  useState,
+} from "react";
+import { calculate, volumnM3 } from "../../services/calculator";
 import { askFile } from "../../services/file";
 import {
   defaultCountryData,
   defaultOrder,
   emptyProject,
   ETransport,
+  EUnit,
   ICountryShippingFeeData,
   IShippingOrder,
   IShippingProject,
@@ -31,7 +38,7 @@ const useService = () => {
   const [context, setContext] = useState<IShippingCalculatorContext>(() => {
     const countryData = defaultCountryData();
     return {
-      order: defaultOrder(countryData[0]!.country),
+      order: defaultOrder(""),
       countryData,
       dispatch(mutation) {
         setContext(produce(mutation));
@@ -43,8 +50,27 @@ const useService = () => {
 
 export const ShippingCalculator: React.FC = () => {
   const context = useService();
+  const [calculateTimes, recalculate] = useReducer((n: number) => n + 1, 0);
+  const lastCalculated = useMemo(() => {
+    if (calculateTimes === 0) {
+      return "";
+    }
+    try {
+      const value = calculate(context.order, context.countryData);
+      return `total: ${value} RMB`;
+    } catch (error) {
+      return "Error";
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [calculateTimes]);
+  const cannotCalculateHint =
+    (!context.order.transport && "please select transport") ||
+    (!context.order.country && "please select country") ||
+    undefined;
+  const cannotCalculate = !!cannotCalculateHint;
   return (
     <div className={styles.calculator}>
+      <div className={styles.title}>Calculator</div>
       <div className={styles["actions-header"]}>
         <button
           onClick={async () => {
@@ -60,8 +86,9 @@ export const ShippingCalculator: React.FC = () => {
         >
           import csv
         </button>
-        <label>transport</label>
+        <label htmlFor="transport">form of transport</label>
         <select
+          id="transport"
           name="transport"
           title="transport"
           value={context.order.transport}
@@ -72,14 +99,16 @@ export const ShippingCalculator: React.FC = () => {
             });
           }}
         >
+          <option value="">--select--</option>
           {Object.values(ETransport).map((transport, i) => (
             <option key={i} value={transport}>
               {transport}
             </option>
           ))}
         </select>
-        <label>country</label>
+        <label htmlFor="country">country</label>
         <select
+          id="country"
           name="country"
           title="country"
           value={context.order.country}
@@ -89,6 +118,7 @@ export const ShippingCalculator: React.FC = () => {
             });
           }}
         >
+          <option value="">--select--</option>
           {context.countryData.map((data, i) => (
             <option key={i} value={data.country}>
               {data.country}
@@ -97,10 +127,26 @@ export const ShippingCalculator: React.FC = () => {
         </select>
       </div>
       <div className={styles["input-header"]}>
-        <label>length</label>
-        <label>width</label>
-        <label>height</label>
-        <label>weight</label>
+        <label>
+          length
+          <Unit type={EUnit.CM} />
+        </label>
+        <label>
+          width
+          <Unit type={EUnit.CM} />
+        </label>
+        <label>
+          height
+          <Unit type={EUnit.CM} />
+        </label>
+        <label>
+          weight
+          <Unit type={EUnit.KG} />
+        </label>
+        <label>
+          volume
+          <Unit type={EUnit.M3} />
+        </label>
         <label>quantity</label>
       </div>
       <Context.Provider value={context}>
@@ -108,19 +154,27 @@ export const ShippingCalculator: React.FC = () => {
           <ProjectForm project={project} index={i} key={i} />
         ))}
       </Context.Provider>
-      <div>
-        {(() => {
-          try {
-            const value = calculate(context.order, context.countryData);
-            return isNaN(value) ? "Error" : `total: ${value}`;
-          } catch (error) {
-            return "Error";
-          }
-        })()}
+      <div className={styles.footer}>
+        <button
+          title={cannotCalculateHint}
+          disabled={cannotCalculate}
+          onClick={recalculate}
+        >
+          calculate
+        </button>
+        <span className={styles.result}>{cannotCalculateHint || lastCalculated}</span>
       </div>
     </div>
   );
 };
+
+interface IUnitProps {
+  type: EUnit;
+}
+
+const Unit: React.FC<IUnitProps> = React.memo(({ type }) => (
+  <strong className={styles.unit}>({type})</strong>
+));
 
 interface IProjectFormProps {
   project: IShippingProject;
@@ -130,14 +184,16 @@ interface IProjectFormProps {
 const ProjectForm: React.FC<IProjectFormProps> = React.memo(
   ({ project, index }) => {
     const context = useContext(Context);
-    const createProjectInputProps = (field: keyof IShippingProject) => {
+    type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
+    const inputCommonProps: InputProps = {
+      type: "number",
+      min: "0",
+      autoComplete: "off",
+    };
+    const createProjectInputProps = (
+      field: keyof IShippingProject
+    ): InputProps => {
       const number = project[field];
-      const commonProps: React.InputHTMLAttributes<HTMLInputElement> = {
-        type: "number",
-        name: field,
-        min: "0",
-        autoComplete: "off",
-      };
       return {
         value: number.toString(),
         onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -149,7 +205,8 @@ const ProjectForm: React.FC<IProjectFormProps> = React.memo(
             ctx.order.projects[index][field] = inputNumber;
           });
         },
-        ...commonProps,
+        ...inputCommonProps,
+        name: field,
       };
     };
     const lengthProps = createProjectInputProps("length");
@@ -174,6 +231,7 @@ const ProjectForm: React.FC<IProjectFormProps> = React.memo(
         <input {...widthProps} />
         <input {...heightProps} />
         <input {...weightProps} />
+        <input {...inputCommonProps} disabled value={volumnM3(project)} />
         <input {...quantityProps} min="1" />
         <button
           type="button"

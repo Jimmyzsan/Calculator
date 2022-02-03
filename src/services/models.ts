@@ -18,12 +18,19 @@ export enum ETransport {
 
 export enum EErrors {
   UnknownCountry,
+  NoTransport,
   OpenFileCanceled,
 }
 
+
+export enum EUnit {
+  M3 = "m³",
+  CM = "cm",
+  KG = "kg"
+}
 export interface IShippingOrder {
   country: string;
-  transport: ETransport;
+  transport: ETransport | "";
   projects: IShippingProject[];
 }
 
@@ -43,7 +50,7 @@ export const emptyProject = (): IShippingProject => ({
 export const defaultOrder = (country: string): IShippingOrder => ({
   country,
   projects: [emptyProject()],
-  transport: ETransport.Sea,
+  transport: "",
 });
 
 export const defaultCountryData = (): ICountryShippingFeeData[] => [
