@@ -17,6 +17,7 @@ import {
   ICountryShippingFeeData,
   IShippingOrder,
   IShippingProject,
+  transportNames,
 } from "../../services/models";
 import { loadCSV } from "../../services/profile";
 import styles from "./styles.module.css";
@@ -53,13 +54,13 @@ export const ShippingCalculator: React.FC = () => {
   const [calculateTimes, recalculate] = useReducer((n: number) => n + 1, 0);
   const lastCalculated = useMemo(() => {
     if (calculateTimes === 0) {
-      return "";
+      return null;
     }
     try {
       const value = calculate(context.order, context.countryData);
-      return `total: ${value} RMB`;
+      return `total 共计: ${value} RMB`;
     } catch (error) {
-      return "Error";
+      return "Error 发生了错误";
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [calculateTimes]);
@@ -70,7 +71,7 @@ export const ShippingCalculator: React.FC = () => {
   const cannotCalculate = !!cannotCalculateHint;
   return (
     <div className={styles.calculator}>
-      <div className={styles.title}>Calculator</div>
+      <div className={styles.title}>Transportation Calculator 运费计算器</div>
       <div className={styles["actions-header"]}>
         <button
           onClick={async () => {
@@ -85,8 +86,13 @@ export const ShippingCalculator: React.FC = () => {
           }}
         >
           import csv
+          <br />
+          导入 CSV
+          <br />
         </button>
-        <label htmlFor="transport">form of transport</label>
+        <label htmlFor="transport">
+          form of transport <br /> 交通方式{" "}
+        </label>
         <select
           id="transport"
           name="transport"
@@ -102,11 +108,13 @@ export const ShippingCalculator: React.FC = () => {
           <option value="">--select--</option>
           {Object.values(ETransport).map((transport, i) => (
             <option key={i} value={transport}>
-              {transport}
+              {transport} {transportNames[transport]}
             </option>
           ))}
         </select>
-        <label htmlFor="country">country</label>
+        <label htmlFor="country">
+          country <br /> 国家
+        </label>
         <select
           id="country"
           name="country"
@@ -128,26 +136,26 @@ export const ShippingCalculator: React.FC = () => {
       </div>
       <div className={styles["input-header"]}>
         <label>
-          length
+          length 长度
           <Unit type={EUnit.CM} />
         </label>
         <label>
-          width
+          width 宽度
           <Unit type={EUnit.CM} />
         </label>
         <label>
-          height
+          height 高度
           <Unit type={EUnit.CM} />
         </label>
         <label>
-          weight
+          weight 重量
           <Unit type={EUnit.KG} />
         </label>
         <label>
-          volume
+          volume 体积
           <Unit type={EUnit.M3} />
         </label>
-        <label>quantity</label>
+        <label>quantity 数量</label>
       </div>
       <Context.Provider value={context}>
         {context.order.projects.map((project, i) => (
@@ -160,9 +168,11 @@ export const ShippingCalculator: React.FC = () => {
           disabled={cannotCalculate}
           onClick={recalculate}
         >
-          calculate
+          calculate 计算
         </button>
-        <span className={styles.result}>{cannotCalculateHint || lastCalculated}</span>
+        <span className={styles.result}>
+          {cannotCalculateHint || lastCalculated}
+        </span>
       </div>
     </div>
   );

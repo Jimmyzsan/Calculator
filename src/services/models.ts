@@ -16,6 +16,11 @@ export enum ETransport {
   Air = "air",
 }
 
+export const transportNames: Record<ETransport, string> = {
+  air: '空运',
+  sea: '海运'
+}
+
 export enum EErrors {
   UnknownCountry,
   NoTransport,

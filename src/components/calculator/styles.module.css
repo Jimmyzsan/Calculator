@@ -5,20 +5,18 @@
   content: ":";
 }
 .calculator .title {
-  display: flex;
-  height: 200px;
-  width: 100%;
-  justify-content: center;
-  align-items: center;
+  position: absolute;
+  left: 50%;
+  transform: translate3d(-50%, -200%, 0);
   font-size: large;
 }
 .actions-header {
   display: grid;
-  grid-template-columns: 100px 180px repeat(auto-fill, 100px);
+  grid-template-columns: 150px 180px repeat(auto-fill, 120px);
 }
 .input-header {
   display: grid;
-  grid-template-columns: repeat(auto-fill, 100px);
+  grid-template-columns: repeat(auto-fill, 150px);
   gap: 12px;
   margin: 12px 0;
 }
@@ -31,7 +29,7 @@
 }
 .input-row {
   display: grid;
-  grid-template-columns: repeat(6, 100px) 24px;
+  grid-template-columns: repeat(6, 150px) 24px;
   gap: 12px;
   margin: 12px 0;
 }
