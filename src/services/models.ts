@@ -61,7 +61,7 @@ export const defaultOrder = (country: string): IShippingOrder => ({
 export const defaultCountryData = (): ICountryShippingFeeData[] => [
   {
     country: "US",
-    rate: 4500,
+    rate: 5000,
     unitPrice: {
       sea: 50,
       air: 70,
@@ -69,7 +69,7 @@ export const defaultCountryData = (): ICountryShippingFeeData[] => [
   },
   {
     country: "UK",
-    rate: 4500,
+    rate: 5000,
     unitPrice: {
       sea: 60,
       air: 80,
@@ -77,7 +77,7 @@ export const defaultCountryData = (): ICountryShippingFeeData[] => [
   },
   {
     country: "AU",
-    rate: 4500,
+    rate: 5000,
     unitPrice: {
       sea: 30,
       air: 65,
