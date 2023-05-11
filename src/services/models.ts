@@ -64,7 +64,7 @@ export const defaultCountryData = (): ICountryShippingFeeData[] => [
     rate: 4500,
     unitPrice: {
       sea: 50,
-      air: 100,
+      air: 70,
     },
   },
   {
@@ -72,7 +72,7 @@ export const defaultCountryData = (): ICountryShippingFeeData[] => [
     rate: 4500,
     unitPrice: {
       sea: 60,
-      air: 90,
+      air: 80,
     },
   },
   {
@@ -80,7 +80,7 @@ export const defaultCountryData = (): ICountryShippingFeeData[] => [
     rate: 4500,
     unitPrice: {
       sea: 30,
-      air: 85,
+      air: 65,
     },
   },
 ];
